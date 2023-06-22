@@ -1,18 +1,34 @@
-import { TrackProps, TrackerContext } from '../../contexts/track/TrackerContext'
+import { TrackProps, TrackerContext, loadAllTracks } from '../../contexts/track/TrackerContext'
 import React, { useContext, useEffect, useState } from 'react'
 import { NavigationBar } from '../../components/navigator'
-import { Text, View } from 'react-native'
+import { PermissionsAndroid, Text, View } from 'react-native'
 import { FooterBar } from '../../components/footer'
 import { MusicCard } from '../../components/card'
 import { Background, MusicList } from './styles'
+import { RequestPermissions } from '../../services/PermissionsService'
 
-export function Home() {
+export function Songs() {
 	const trackContext = useContext(TrackerContext)
 	const [tracks, setTracks] = useState<TrackProps[]>([])
 
 	useEffect(() => {
+		RequestPermissions().then(status => {
+			if (status === PermissionsAndroid.RESULTS.GRANTED) {
+				if (trackContext) {
+					loadAllTracks().then(tracks => {
+						if (tracks) {
+							console.log(tracks)
+							trackContext.setTrack(tracks)
+						}
+					})
+				}
+			}
+		})
+	}, [])
+
+	useEffect(() => {
 		if (trackContext) {
-			setTracks(trackContext.tracks)
+			setTracks(trackContext.getTrack)
 		}
 	}, [trackContext])
 
