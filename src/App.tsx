@@ -1,6 +1,6 @@
 import React from 'react'
 import { ThemeProvider } from 'styled-components'
-import { Songs } from './pages/songs'
+import { Songs } from './pages/home'
 import { TrackerProvider } from './contexts/track/TrackerContext'
 
 const collors = {
