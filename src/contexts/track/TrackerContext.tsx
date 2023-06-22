@@ -36,9 +36,7 @@ export function TrackerProvider(props: TrackerProviderProps) {
 	}
 
 	useEffect(() => {
-		TrackPlayer.add(tracks).then(() => {
-			TrackPlayer.play()
-		})
+		TrackPlayer.add(tracks)
 	}, [tracks])
 
 	const trackContextValue: TrackerContextProps = {
