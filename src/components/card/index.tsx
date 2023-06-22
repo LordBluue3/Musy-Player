@@ -30,7 +30,7 @@ export function MusicCard(props: TrackProps) {
 					<Image style={{ maxWidth: 40, maxHeight: 40 }} source={require('../../assets/music-icon.png')} />
 				</CardImage>
 				<MusicInformation>
-					<MusicTitleText>{props.title.replace('.mp3', '')}</MusicTitleText>
+					<MusicTitleText>{props.title}</MusicTitleText>
 					<MusicArtistText>{props.artist}</MusicArtistText>
 				</MusicInformation>
 			</CardInformation>
