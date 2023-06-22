@@ -10,55 +10,55 @@ interface NavbarProps {
 }
 
 export function NavigationBar(props: NavbarProps) {
-    return (
-        <NavigatorBar>
-            <Navbar>
-                <SideMenuView>
-                    <TouchableOpacity>
-                        <MaterialCommunityIcons color={'#ECECEC'} name='text' size={30} />
-                    </TouchableOpacity>
+	return (
+		<NavigatorBar>
+			<Navbar>
+				<SideMenuView>
+					<TouchableOpacity>
+						<MaterialCommunityIcons color={'#ECECEC'} name='text' size={30} />
+					</TouchableOpacity>
 
-                    <Title>
-                        {props.title}
-                    </Title>
-                </SideMenuView>
+					<Title>
+						{props.title}
+					</Title>
+				</SideMenuView>
 
-                <SearchView>
-                    <TouchableOpacity>
-                        <MaterialIcons color={'#ECECEC'} name='search' size={40} />
-                    </TouchableOpacity>
-                </SearchView>
-            </Navbar>
+				<SearchView>
+					<TouchableOpacity>
+						<MaterialIcons color={'#ECECEC'} name='search' size={40} />
+					</TouchableOpacity>
+				</SearchView>
+			</Navbar>
 
-            <PagesBar>
-                <TouchableOpacity>
-                    <Text>Songs</Text>
-                </TouchableOpacity>
+			<PagesBar>
+				<TouchableOpacity>
+					<Text>Songs</Text>
+				</TouchableOpacity>
 
-                <TouchableOpacity>
-                    <Text>Artists</Text>
-                </TouchableOpacity>
+				<TouchableOpacity>
+					<Text>Artists</Text>
+				</TouchableOpacity>
 
-                <TouchableOpacity>
-                    <Text>Playlist</Text>
-                </TouchableOpacity>
+				<TouchableOpacity>
+					<Text>Playlist</Text>
+				</TouchableOpacity>
 
-                <TouchableOpacity>
-                    <Text>Albums</Text>
-                </TouchableOpacity>
+				<TouchableOpacity>
+					<Text>Albums</Text>
+				</TouchableOpacity>
 
-                <TouchableOpacity>
-                    <Text>Folder</Text>
-                </TouchableOpacity>
+				<TouchableOpacity>
+					<Text>Folder</Text>
+				</TouchableOpacity>
 
-                <TouchableOpacity>
-                    <MaterialCommunityIcons color={'#ECECEC'} name='shuffle-variant' size={18} />
-                </TouchableOpacity>
+				<TouchableOpacity>
+					<MaterialCommunityIcons color={'#ECECEC'} name='shuffle-variant' size={18} />
+				</TouchableOpacity>
 
-                <TouchableOpacity>
-                    <MaterialCommunityIcons color={'#ECECEC'} name='playlist-play' size={19} />
-                </TouchableOpacity>
-            </PagesBar>
-        </NavigatorBar>
-    )
+				<TouchableOpacity>
+					<MaterialCommunityIcons color={'#ECECEC'} name='playlist-play' size={19} />
+				</TouchableOpacity>
+			</PagesBar>
+		</NavigatorBar>
+	)
 }
