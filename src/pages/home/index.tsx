@@ -17,7 +17,6 @@ export function Songs() {
 				if (trackContext) {
 					loadAllTracks().then(tracks => {
 						if (tracks) {
-							console.log(tracks)
 							trackContext.setTrack(tracks)
 						}
 					})
