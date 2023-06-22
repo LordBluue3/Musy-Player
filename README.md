@@ -19,10 +19,10 @@ App is based at this [design](https://www.figma.com/community/file/1217535322790
 
 # Contributors
 
-<table><tbody><tr><td align="center" valign="top" width="11%">
+<table><tbody><tr>
+	<td align="center" valign="top" width="11%">
 	<a href="https://github.com/Undead34">
 		<img src="https://github.com/Undead34.png?s=75" width="75" height="75"><br />
 		Gabriel Maizo
 	</a>
-</td><td align="center" valign="top" width="11%">
 </td></tr></tbody></table>
