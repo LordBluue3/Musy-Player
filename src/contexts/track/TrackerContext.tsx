@@ -1,3 +1,4 @@
+/* eslint-disable no-inner-declarations */
 import React, { ReactNode, createContext, useEffect, useState } from 'react'
 
 import { FFprobeKit } from 'ffmpeg-kit-react-native'
@@ -6,7 +7,8 @@ import { minimatch } from 'minimatch'
 import RNFS from 'react-native-fs'
 
 interface TrackerContextProps {
-    tracks: Array<TrackProps>
+    getTrack: () => TrackProps[];
+	setTrack: (track: TrackProps[]) => TrackProps[];
 }
 
 export interface TrackProps {
@@ -22,74 +24,26 @@ interface TrackerProviderProps {
 export const TrackerContext = createContext<TrackerContextProps | undefined>(undefined)
 
 export function TrackerProvider(props: TrackerProviderProps) {
-	const [tracks, setTrack] = useState<TrackProps[]>([])
+	const [tracks, setTracks] = useState<TrackProps[]>([])
 
-	useEffect(() => {
-		console.log('Starting the scan of the songs in the default directory...')
+	function getTrack(): TrackProps[] {
+		return tracks
+	}
 
-		RNFS.readDir(RNFS.ExternalStorageDirectoryPath).then(paths => {
-			const musicPath = paths.find((path) => path.name === 'Music')
-
-			if (!musicPath) {
-				console.error('The default music directory could not be found...')
-				return
-			}
-
-			async function getMusicTags(music: RNFS.ReadDirItem): Promise<Record<string, any> | object> {
-				try {
-					const session = await FFprobeKit.getMediaInformation(music.path)
-					const information = await session.getMediaInformation()
-
-					if (information)
-						return information.getTags()
-					else
-						return {}
-				} catch (error) {
-					console.log(error, 'for ', music.name)
-					return {}
-				}
-			}
-
-			function scanMusicDirectory(directoryPath: string) {
-				RNFS.readDir(directoryPath).then(files => {
-					const match = minimatch.filter('*.{mp3,flac}', { matchBase: true })
-
-					const musics = files.filter(file => match(file.name))
-						.map(async (music) => {
-							const tags = await getMusicTags(music)
-
-							return {
-								url: music.path,
-								title: 'title' in tags ? tags.title : music.name.replace(/\.[^.]+$/, ''),
-								artist: 'artist' in tags ? tags.artist : 'Unknown Artist'
-							}
-						})
-
-					Promise.all(musics).then((musics) => {
-						setTrack((prevTracks) => [...prevTracks, ...musics])
-					}).catch((error) => {
-						console.log(error)
-					})
-
-					const subDirectories = files.filter((file) => file.isDirectory())
-					subDirectories.forEach((subDirectory) => {
-						scanMusicDirectory(subDirectory.path)
-					})
-				})
-			}
-
-			scanMusicDirectory(musicPath.path)
-		})
-	}, [])
+	function setTrack(track: TrackProps[]): TrackProps[] {
+		setTracks(track)
+		return track
+	}
 
 	useEffect(() => {
 		TrackPlayer.add(tracks).then(() => {
-			TrackPlayer.play().then(() => console.log('Click'))
+			TrackPlayer.play()
 		})
 	}, [tracks])
 
 	const trackContextValue: TrackerContextProps = {
-		tracks: tracks
+		getTrack,
+		setTrack
 	}
 
 	return (
@@ -97,4 +51,63 @@ export function TrackerProvider(props: TrackerProviderProps) {
 			{props.children}
 		</TrackerContext.Provider>
 	)
+}
+
+export async function loadAllTracks(): Promise<TrackProps[] | undefined> {
+	const tracks: TrackProps[] = []
+
+	console.log('Starting the scan of the songs in the default directory...')
+
+	try {
+		const paths = await RNFS.readDir(RNFS.ExternalStorageDirectoryPath)
+		const musicPath = paths.find((path) => path.name === 'Music')
+
+		if (!musicPath) {
+			console.error('The default music directory could not be found...')
+			return
+		}
+
+		async function getMusicTags(music: RNFS.ReadDirItem): Promise<Record<string, any> | object> {
+			try {
+				const session = await FFprobeKit.getMediaInformation(music.path)
+				const information = await session.getMediaInformation()
+
+				if (information)
+					return information.getTags()
+				else
+					return {}
+			} catch (error) {
+				console.log(error, 'for ', music.name)
+				return {}
+			}
+		}
+
+		async function scanMusicDirectory(directoryPath: string) {
+			const files = await RNFS.readDir(directoryPath)
+			const match = minimatch.filter('*.{mp3,flac}', { matchBase: true })
+
+			const musics = files.filter(file => match(file.name))
+				.map(async (music) => {
+					const tags = await getMusicTags(music)
+
+					return {
+						url: music.path,
+						title: 'title' in tags ? tags.title : music.name.replace(/\.[^.]+$/, ''),
+						artist: 'artist' in tags ? tags.artist : 'Unknown Artist'
+					}
+				})
+			const scannedMusics = await Promise.all(musics)
+			scannedMusics.forEach(music => tracks.push(music))
+
+			const subDirectories = files.filter((file) => file.isDirectory())
+			subDirectories.forEach((subDirectory) => {
+				scanMusicDirectory(subDirectory.path)
+			})
+		}
+		await scanMusicDirectory(musicPath.path)
+		return tracks
+	} catch (error) {
+		console.log(error)
+		return tracks
+	}
 }
