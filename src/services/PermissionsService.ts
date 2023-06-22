@@ -10,4 +10,6 @@ export const RequestPermissions = async () => {
 	} else {
 		console.log('Access to external storage has been denied by the user.')
 	}
+
+	return granted
 }
