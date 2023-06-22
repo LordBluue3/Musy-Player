@@ -1,6 +1,6 @@
 import React from 'react'
 import { ThemeProvider } from 'styled-components'
-import { Home } from './pages/home'
+import { Songs } from './pages/songs'
 import { TrackerProvider } from './contexts/track/TrackerContext'
 
 const collors = {
@@ -12,7 +12,7 @@ function App() {
 	return (
 		<TrackerProvider>
 			<ThemeProvider theme={collors}>
-				<Home />
+				<Songs />
 			</ThemeProvider>
 		</TrackerProvider>
 	)
