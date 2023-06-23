@@ -7,7 +7,18 @@ import { MusicCard } from '../../components/card'
 import { Background, MusicList } from './styles'
 import { RequestPermissions } from '../../services/PermissionsService'
 
-export function Songs() {
+import { StackNavigationProp } from '@react-navigation/stack'
+
+interface RootStackParamList {
+	Player: undefined;
+	[key: string]: undefined;
+}
+
+export interface SongsScreenProps {
+	navigation: StackNavigationProp<RootStackParamList, 'Player'>
+}
+
+export function Songs({navigation}: SongsScreenProps) {
 	const trackContext = useContext(TrackerContext)
 	const [tracks, setTracks] = useState<TrackProps[]>([])
 
@@ -51,7 +62,7 @@ export function Songs() {
 				)}
 			</MusicList>
 
-			<FooterBar />
+			<FooterBar navigation={navigation}/>
 		</Background>
 	)
 }
