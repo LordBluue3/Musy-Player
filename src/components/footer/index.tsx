@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import {
 	Footer,
@@ -21,26 +21,19 @@ import TrackPlayer, { State, Event } from 'react-native-track-player'
 import { SongsScreenProps } from '../../pages/songs'
 
 export function FooterBar({navigation}: SongsScreenProps) {
-	const [paused, setPaused] = useState<boolean>(false)
+	const [paused, setPaused] = useState<boolean>(true)
 	const [title, setTitle] = useState<string>('')
 	const [artist, setArtist] = useState<string>('')
 
 	TrackPlayer.addEventListener(Event.RemotePlay, () => { TrackPlayer.play(); setPaused(false) })
 	TrackPlayer.addEventListener(Event.RemotePause, () => { TrackPlayer.pause(); setPaused(true) })
-
-	useEffect(() => {
-		function setTrack() {
-			TrackPlayer.getCurrentTrack().then((track) => {
-				TrackPlayer.getTrack(Number(track)).then((track) => {
-					setTitle(track?.title ?? '')
-					setArtist(track?.artist ?? '')
-
-				})
-			})
+	TrackPlayer.addEventListener(Event.PlaybackTrackChanged, async (changed) => {
+		const track = await TrackPlayer.getTrack(changed.nextTrack)
+		if (track) {
+			setTitle(track.title ?? '')
+			setArtist(track.artist ?? '')
 		}
-
-		TrackPlayer.addEventListener(Event.PlaybackTrackChanged, setTrack)
-	}, [])
+	})
 
 	async function handlePlayPause() {
 		const state = await TrackPlayer.getState()
