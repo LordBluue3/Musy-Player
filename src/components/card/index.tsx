@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
 	Background,
 	CardImage,
@@ -10,26 +10,30 @@ import {
 import { Image } from 'react-native'
 import { MusicArtistText, MusicTitleText } from '../footer/styles'
 import { TrackProps, TrackerContext } from '../../contexts/track/TrackerContext'
-import TrackPlayer, { Event, Track } from 'react-native-track-player'
+import TrackPlayer, { Track, Event } from 'react-native-track-player'
 
 export function MusicCard(props: TrackProps) {
-	const [currentTrack, setCurrentTrack] = useState<Track>()
 	const trackerContext = useContext(TrackerContext)
+	const [currentTrack, setCurrentTrack] = useState<Track>()
 
-	TrackPlayer.addEventListener(Event.PlaybackTrackChanged, (track) => {
-		TrackPlayer.getTrack(track.nextTrack).then((current) => {
-			if (current) {
-				setCurrentTrack(current)
+	useEffect(() => {
+		const trackChangedListener = TrackPlayer.addEventListener(Event.PlaybackTrackChanged, async (changed) => {
+			const track = await TrackPlayer.getTrack(changed.nextTrack)
+			if (track) {
+				setCurrentTrack(track)
 			}
 		})
-	})
+	
+		return () => {
+			trackChangedListener.remove()
+		}
+	}, [])
 
 	return (
 		<Background onPress={() => {
 			if (trackerContext) {
 				const musicIndex = trackerContext.getTrack().findIndex(music => music.url === props.url)
-				TrackPlayer.skip(musicIndex)
-				TrackPlayer.play()
+				TrackPlayer.skip(musicIndex).then(() => TrackPlayer.play())
 			}
 		}}>
 			<CardInformation>
@@ -44,7 +48,7 @@ export function MusicCard(props: TrackProps) {
 
 			<CardPlayingIcon>
 				{
-					currentTrack?.url === props.url ? (
+					currentTrack?.url === props.url? (
 						<Image style={{ maxWidth: 40, maxHeight: 40 }} source={require('../../assets/playing.png')} />
 					):(
 						<></>
