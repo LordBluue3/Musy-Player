@@ -1,8 +1,8 @@
 /* eslint-disable no-inner-declarations */
-import React, { ReactNode, createContext, useEffect, useState } from 'react'
+import React, { ReactNode, createContext, useState } from 'react'
 
 import { FFprobeKit } from 'ffmpeg-kit-react-native'
-import TrackPlayer from 'react-native-track-player'
+import TrackPlayer, { RepeatMode } from 'react-native-track-player'
 import { minimatch } from 'minimatch'
 import RNFS from 'react-native-fs'
 
@@ -32,12 +32,9 @@ export function TrackerProvider(props: TrackerProviderProps) {
 
 	function setTrack(track: TrackProps[]): TrackProps[] {
 		setTracks(track)
+		TrackPlayer.add(track)
 		return track
 	}
-
-	useEffect(() => {
-		TrackPlayer.add(tracks)
-	}, [tracks])
 
 	const trackContextValue: TrackerContextProps = {
 		getTrack,
