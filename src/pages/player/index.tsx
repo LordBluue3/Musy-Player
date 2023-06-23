@@ -33,8 +33,27 @@ export function Player({navigation}: PlayerScreenProps) {
 
 	TrackPlayer.addEventListener(Event.RemotePlay, () => { TrackPlayer.play(); setPaused(false) })
 	TrackPlayer.addEventListener(Event.RemotePause, () => { TrackPlayer.pause(); setPaused(true) })
+	TrackPlayer.addEventListener(Event.PlaybackState, (track) => {
+		if (track) {
+			if (track.state.toString() === 'playing') {
+				setPaused(false)
+			} else {
+				setPaused(true)
+			}
+		}
+	})
 	
 	useEffect(() => {
+		TrackPlayer.getState().then(state => {
+			if (state) {
+				if (state.toString() === 'playing') {
+					setPaused(false)
+				} else {
+					setPaused(true)
+				}
+			}
+		})
+
 		setTrack()
 	}, [])
 
@@ -83,11 +102,11 @@ export function Player({navigation}: PlayerScreenProps) {
 		<Background>
 			<Navbar>
 				<NavToSongs onPress={() => navigation.navigate('Songs')}>
-					<Ionicons name='chevron-down-outline' size={35}/>
+					<Ionicons color={'#ECECEC'}  name='chevron-down-outline' size={35}/>
 				</NavToSongs>
 				<Title>Musy Player</Title>
 				<SettingsButton>
-					<Ionicons name='ellipsis-vertical' size={25}/>
+					<Ionicons color={'#ECECEC'}  name='ellipsis-vertical' size={25}/>
 				</SettingsButton>
 			</Navbar>
 
@@ -103,7 +122,7 @@ export function Player({navigation}: PlayerScreenProps) {
 				<PlayerManager>
 					<PlayerIcons>
 						<TouchableOpacity>
-							<Ionicons name='volume-medium' size={25} />
+							<Ionicons color={'#ECECEC'} name='volume-medium' size={25} />
 						</TouchableOpacity>
 
 						<TouchableOpacity>
