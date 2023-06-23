@@ -42,8 +42,7 @@ export const MusicArtistText = styled.Text`
 
 export const PlayerManager = styled.View`
     flex: 1;
-    flex-direction: column;
-    max-height: 50%;
+    flex-direction: column;    
     max-width: 35%;
     margin-right: 3%;
 `
@@ -54,9 +53,10 @@ export const Player = styled.View`
     align-items: center;
     justify-content: center;
     gap: 20px;
+    min-height: 50%;
 `
 
-export const Progress = styled.View`
+export const ProgressView = styled.View`
     flex: 1;
-    max-height: 2px;
+    align-items: center;
 `
