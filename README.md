@@ -14,6 +14,7 @@ App is based at this [design](https://www.figma.com/community/file/1217535322790
 - [react-native-vector-icons](https://github.com/oblador/react-native-vector-icons)
 - [react-native-track-player](https://github.com/doublesymmetry/react-native-track-player)
 - [react-native-fs](https://github.com/itinance/react-native-fs)
+- [react-navigation](https://github.com/react-navigation/react-navigation)
 - [ffmpeg-kit-react-native](https://github.com/arthenica/ffmpeg-kit)
 - [eslint](https://github.com/eslint/eslint)
 
