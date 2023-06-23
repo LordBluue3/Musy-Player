@@ -40,7 +40,6 @@ export function Player({navigation}: PlayerScreenProps) {
 
 	useEffect(() => {
 		setMusic((prevMusic) => {
-			console.log(prevMusic)
 			if (prevMusic) {
 				prevMusic.position = `${Math.floor(progress.position / 60)}:${(Math.floor(progress.position) % 60).toString().padStart(2, '0')}`
 			}
