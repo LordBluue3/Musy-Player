@@ -39,7 +39,13 @@ export function Player({navigation}: PlayerScreenProps) {
 	}, [])
 
 	useEffect(() => {
-		console.log(progress)
+		setMusic((prevMusic) => {
+			console.log(prevMusic)
+			if (prevMusic) {
+				prevMusic.position = `${Math.floor(progress.position / 60)}:${(Math.floor(progress.position) % 60).toString().padStart(2, '0')}`
+			}
+			return prevMusic
+		})
 	}, [progress])
 
 	useEffect(() => {
@@ -122,7 +128,9 @@ export function Player({navigation}: PlayerScreenProps) {
 							color='#ECECEC' 
 							unfilledColor='#1A1A1A' 
 							height={3} width={330} 
-							progress={(Math.floor(progress.position) / Math.floor(progress.duration))} />
+							progress={progress.duration && progress.position != 0 ? 
+								(Math.floor(progress.position) / Math.floor(progress.duration)): 0
+							} />
 						<PlayerProgressTimer>
 							<ArtistText>{music?.position}</ArtistText>
 							<ArtistText>{music?.duration}</ArtistText>
