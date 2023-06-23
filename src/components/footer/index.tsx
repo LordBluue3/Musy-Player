@@ -18,8 +18,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 
 import TrackPlayer, { State, Event } from 'react-native-track-player'
+import { SongsScreenProps } from '../../pages/songs'
 
-export function FooterBar() {
+export function FooterBar({navigation}: SongsScreenProps) {
 	const [paused, setPaused] = useState<boolean>(false)
 	const [title, setTitle] = useState<string>('')
 	const [artist, setArtist] = useState<string>('')
@@ -53,10 +54,10 @@ export function FooterBar() {
 		}
 	}
 
-
-
 	return (
-		<Footer>
+		<Footer onPress={() => {
+			navigation.navigate('Player')
+		}}>
 			<PlayerInformation>
 				<MusicImage>
 					<Image style={{ maxWidth: 40, maxHeight: 40 }} source={require('../../assets/music-icon.png')} />
