@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Image, TouchableOpacity } from 'react-native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { ArtistText, Background, MusicImage, MusicInformation, MusicPlayingView, NavToSongs, Navbar, PlayerButtons, PlayerIcons, PlayerManager, PlayerProgressBar, PlayerProgressTimer, SettingsButton, Text, Title } from './styles'
@@ -27,28 +27,25 @@ interface MusicProps {
 }
 
 export function Player({navigation}: PlayerScreenProps) {
-	const [paused, setPaused] = useState<boolean>(false)
-	const [music, setMusic] = useState<MusicProps>()
+	const [paused, setPaused] = useState<boolean>(true)
+	const [music, setMusic] = useState<MusicProps>()	
 	const progress = useProgress()
 
 	TrackPlayer.addEventListener(Event.RemotePlay, () => { TrackPlayer.play(); setPaused(false) })
 	TrackPlayer.addEventListener(Event.RemotePause, () => { TrackPlayer.pause(); setPaused(true) })
-
+	
 	useEffect(() => {
 		setTrack()
 	}, [])
 
 	useEffect(() => {
-		setMusic((prevMusic) => {
-			if (prevMusic) {
-				prevMusic.position = `${Math.floor(progress.position / 60)}:${(Math.floor(progress.position) % 60).toString().padStart(2, '0')}`
-			}
-			return prevMusic
+		const trackChangedListener = TrackPlayer.addEventListener(Event.PlaybackTrackChanged, () => {
+			setTrack()
 		})
-	}, [progress])
-
-	useEffect(() => {
-		TrackPlayer.addEventListener(Event.PlaybackTrackChanged, setTrack)
+	
+		return () => {
+			trackChangedListener.remove()
+		}
 	}, [])
 
 	function setTrack() {
@@ -57,14 +54,17 @@ export function Player({navigation}: PlayerScreenProps) {
 				const title = track?.title ?? ''
 				const artist = track?.artist ?? ''
 				const durationSeconds = await TrackPlayer.getDuration()
-				const positionSeconds = await TrackPlayer.getPosition()
-
 				const duration = `${Math.floor(durationSeconds / 60)}:${(Math.floor(durationSeconds) % 60)}`
-				const position = `${Math.floor(positionSeconds / 60)}:${(Math.floor(positionSeconds) % 60).toString().padStart(2, '0')}`
 
-				setMusic({ title: title, artist: artist, duration: duration, position: position })
+				setMusic({ title: title, artist: artist, duration: duration, position: '0:00' })
 			})
 		})
+	}
+
+	function getPosition(): string {
+		const positionSeconds = Math.floor(progress.position)
+		const position = `${Math.floor(positionSeconds / 60)}:${(Math.floor(positionSeconds) % 60).toString().padStart(2, '0')}`
+		return position
 	}
 
 	async function handlePlayPause() {
@@ -78,6 +78,7 @@ export function Player({navigation}: PlayerScreenProps) {
 			setPaused(false)
 		}
 	}
+
 	return(
 		<Background>
 			<Navbar>
@@ -131,7 +132,7 @@ export function Player({navigation}: PlayerScreenProps) {
 								(Math.floor(progress.position) / Math.floor(progress.duration)): 0
 							} />
 						<PlayerProgressTimer>
-							<ArtistText>{music?.position}</ArtistText>
+							<ArtistText>{getPosition()}</ArtistText>
 							<ArtistText>{music?.duration}</ArtistText>
 						</PlayerProgressTimer>
 					</PlayerProgressBar>
