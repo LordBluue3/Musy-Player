@@ -21,7 +21,7 @@ export interface SongsScreenProps {
 export function Songs({navigation}: SongsScreenProps) {
 	const trackContext = useContext(TrackerContext)
 	const [tracks, setTracks] = useState<TrackProps[]>([])
-
+	
 	useEffect(() => {
 		RequestPermissions().then(status => {
 			if (status === PermissionsAndroid.RESULTS.GRANTED) {
@@ -29,18 +29,13 @@ export function Songs({navigation}: SongsScreenProps) {
 					loadAllTracks().then(tracks => {
 						if (tracks) {
 							trackContext.setTrack(tracks)
+							setTracks(tracks)
 						}
 					})
 				}
 			}
 		})
 	}, [])
-
-	useEffect(() => {
-		if (trackContext) {
-			setTracks(trackContext.getTrack)
-		}
-	}, [trackContext])
 
 	return (
 		<Background>
@@ -54,15 +49,15 @@ export function Songs({navigation}: SongsScreenProps) {
 				) : (
 					tracks.map((music) => (
 						<MusicCard key={music.url}
+							artist={music.artist}
 							title={music.title}
 							url={music.url}
-							artist={music.artist}
 						/>
 					))
 				)}
 			</MusicList>
 
-			<FooterBar navigation={navigation}/>
+			<FooterBar navigation={navigation} />
 		</Background>
 	)
 }
