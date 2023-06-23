@@ -18,7 +18,7 @@ function App() {
 		<TrackerProvider>
 			<ThemeProvider theme={collors}>
 				<NavigationContainer>
-					<Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='Player'>
+					<Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='Songs'>
 						<Stack.Screen name='Songs' component={Songs} />
 						<Stack.Screen name='Player' component={Player} />
 					</Stack.Navigator>
