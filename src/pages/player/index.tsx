@@ -1,14 +1,25 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Image, TouchableOpacity } from 'react-native'
 import { StackNavigationProp } from '@react-navigation/stack'
-import { ArtistText, Background, MusicImage, MusicInformation, MusicPlayingView, NavToSongs, Navbar, PlayerButtons, PlayerIcons, PlayerManager, PlayerProgressBar, PlayerProgressTimer, SettingsButton, Text, Title } from './styles'
-
-import * as Progress from 'react-native-progress'
+import { 
+	Background, 
+	MusicImage, 
+	MusicInformation, 
+	NavToSongs, Navbar, 
+	PlayerButtons, 
+	PlayerIcons, 
+	PlayerManager, 
+	SettingsButton, 
+	Text, 
+	Title 
+} from './styles'
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import TrackPlayer, { Event, State, useProgress } from 'react-native-track-player'
+import TrackPlayer, { Event, RepeatMode, State, } from 'react-native-track-player'
+import { ProgressBar } from '../../components/player/progress'
+import { MusicPlayer } from '../../components/player/music'
 
 interface RootStackParamList {
     Songs: undefined;
@@ -19,17 +30,9 @@ interface PlayerScreenProps {
     navigation: StackNavigationProp<RootStackParamList, 'Songs'>
 }
 
-interface MusicProps {
-	title: string;
-	artist: string;
-	duration: string;
-	position: string;
-}
-
 export function Player({navigation}: PlayerScreenProps) {
 	const [paused, setPaused] = useState<boolean>(true)
-	const [music, setMusic] = useState<MusicProps>()	
-	const progress = useProgress()
+	const [repeat, setRepeat] = useState<boolean>(false)
 
 	TrackPlayer.addEventListener(Event.RemotePlay, () => { TrackPlayer.play(); setPaused(false) })
 	TrackPlayer.addEventListener(Event.RemotePause, () => { TrackPlayer.pause(); setPaused(true) })
@@ -42,49 +45,6 @@ export function Player({navigation}: PlayerScreenProps) {
 			}
 		}
 	})
-	
-	useEffect(() => {
-		TrackPlayer.getState().then(state => {
-			if (state) {
-				if (state.toString() === 'playing') {
-					setPaused(false)
-				} else {
-					setPaused(true)
-				}
-			}
-		})
-
-		setTrack()
-	}, [])
-
-	useEffect(() => {
-		const trackChangedListener = TrackPlayer.addEventListener(Event.PlaybackTrackChanged, () => {
-			setTrack()
-		})
-	
-		return () => {
-			trackChangedListener.remove()
-		}
-	}, [])
-
-	function setTrack() {
-		TrackPlayer.getCurrentTrack().then((track) => {
-			TrackPlayer.getTrack(Number(track)).then(async (track) => {
-				const title = track?.title ?? ''
-				const artist = track?.artist ?? ''
-				const durationSeconds = await TrackPlayer.getDuration()
-				const duration = `${Math.floor(durationSeconds / 60)}:${(Math.floor(durationSeconds) % 60)}`
-
-				setMusic({ title: title, artist: artist, duration: duration, position: '0:00' })
-			})
-		})
-	}
-
-	function getPosition(): string {
-		const positionSeconds = Math.floor(progress.position)
-		const position = `${Math.floor(positionSeconds / 60)}:${(Math.floor(positionSeconds) % 60).toString().padStart(2, '0')}`
-		return position
-	}
 
 	async function handlePlayPause() {
 		const state = await TrackPlayer.getState()
@@ -115,10 +75,7 @@ export function Player({navigation}: PlayerScreenProps) {
 				<MusicImage>
 					<Image style={{maxHeight: 250, maxWidth: 250, borderRadius: 40}} source={require('../../assets/music-icon.png')} />
 				</MusicImage>
-				<MusicPlayingView>
-					<Title>{music?.title}</Title>
-					<ArtistText>{music?.artist}</ArtistText>
-				</MusicPlayingView>
+				<MusicPlayer />
 				<PlayerManager>
 					<PlayerIcons>
 						<TouchableOpacity>
@@ -133,28 +90,25 @@ export function Player({navigation}: PlayerScreenProps) {
 							<Ionicons color={'gray'} name='shuffle' size={25} />
 						</TouchableOpacity>
 
-						<TouchableOpacity>
-							<Ionicons color={'gray'} name='repeat' size={25} />
+						<TouchableOpacity
+							onPress={() => {
+								setRepeat(!repeat)
+
+								if (repeat) {
+									TrackPlayer.setRepeatMode(RepeatMode.Queue)
+								} else {
+									TrackPlayer.setRepeatMode(RepeatMode.Off)
+								}
+							}}
+						>
+							<Ionicons color={repeat ? '#ECECEC' : 'gray'} name='repeat' size={25} />
 						</TouchableOpacity>
 
 						<TouchableOpacity>
 							<Ionicons color={'#ECECEC'} name='heart-sharp' size={25} />
 						</TouchableOpacity>
 					</PlayerIcons>
-					<PlayerProgressBar>
-						<Progress.Bar 
-							borderWidth={0} 
-							color='#ECECEC' 
-							unfilledColor='#1A1A1A' 
-							height={3} width={330} 
-							progress={progress.duration && progress.position != 0 ? 
-								(Math.floor(progress.position) / Math.floor(progress.duration)): 0
-							} />
-						<PlayerProgressTimer>
-							<ArtistText>{getPosition()}</ArtistText>
-							<ArtistText>{music?.duration}</ArtistText>
-						</PlayerProgressTimer>
-					</PlayerProgressBar>
+					<ProgressBar/>
 					<PlayerButtons>
 						<TouchableOpacity
 							onPress={() => TrackPlayer.skipToPrevious()}
